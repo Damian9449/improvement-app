@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -99,10 +98,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
 
-                        // ====== WEBSOCKET ENDPOINTS ======
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/ws/info/**").permitAll()
-                        .requestMatchers("/sockjs-node/**").permitAll()
+                        // WebSocket (/ws/**) nie jest publiczny — handshake SockJS niesie cookie z JWT
+                        // i podpada pod anyRequest().authenticated(); ramki STOMP pilnuje
+                        // WebSocketAuthChannelInterceptor
                         .requestMatchers("/error").permitAll()
 
                         // Publiczne endpointy
@@ -112,9 +110,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/auth/logout").permitAll()
                         .requestMatchers("/api/v1/auth/verify-email").permitAll()
                         .requestMatchers("/api/v1/auth/resend-verification").permitAll()
-                        .requestMatchers("/api/v1/test/all").permitAll()
 
-                        // Swagger/OpenAPI - jeśli używasz
+                        // Swagger/OpenAPI — na produkcji (profil smallhost) springdoc jest wyłączony
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -123,12 +120,6 @@ public class WebSecurityConfig {
                                 "/webjars/**",
                                 "/v2/api-docs/**"
                         ).permitAll()
-
-                        // Endpointy wymagające autoryzacji
-                        .requestMatchers(HttpMethod.GET, "/api/v1/test/user")
-                        .hasAnyRole("USER", "MODERATOR", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/test/admin")
-                        .hasRole("ADMIN")
 
                         // WSZYSTKIE INNE REQUESTY WYMAGAJĄ AUTORYZACJI!
                         .anyRequest().authenticated()

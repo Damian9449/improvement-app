@@ -18,6 +18,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid, email, profile
+
   # Keystore przeładowywany w locie po podmianie pliku (odnowa certu przez acme.sh),
   # dzięki czemu hook nie musi restartować aplikacji (ani znać jej sekretów).
   ssl:
@@ -46,6 +47,13 @@ google:
   credentials:
     folder:
       path: file:/home/mutarexx/backend/google_token/serviceAccount.json
+
+# Dokumentacja API niedostępna na produkcji (nie ujawniamy listy endpointów i modeli)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 
 # Logi do pliku z rotacją (10 MB, 14 dni). Konsola wyłączona, żeby nohup nie dublował
 # całego logu - do logs/stdout.log trafia tylko to, co JVM wypisze przed startem logowania.

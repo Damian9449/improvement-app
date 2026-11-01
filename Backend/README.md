@@ -110,7 +110,7 @@ Zadania okresowe z podziałem na `daily` i `weekly`.
 Przechowywanie i parsowanie danych o technologiach (`Technology`, `TechnologyList`).
 
 ### `security/`
-Pełna obsługa uwierzytelniania: JWT (access + refresh token, `jwt`), logowanie przez Google (`oauth2`), kontrolery uwierzytelniania (`controllers`), konfiguracja zabezpieczeń i CORS (`config`), rate limiting prób logowania oraz weryfikacja e-mail.
+Pełna obsługa uwierzytelniania: JWT (access + refresh token, `jwt`), logowanie przez Google (`oauth2`), kontrolery uwierzytelniania (`controllers`), konfiguracja zabezpieczeń i CORS (`config`), rate limiting prób logowania oraz weryfikacja e-mail. WebSocket (`/ws`, STOMP) wymaga zalogowania: handshake przechodzi przez łańcuch Spring Security, a `WebSocketAuthChannelInterceptor` pozwala klientom tylko subskrybować `/topic/**` — wysyłanie wiadomości (SEND) jest zablokowane, kanał służy wyłącznie do powiadomień serwer → klient.
 
 ### `shopping/`
 Listy zakupów w PostgreSQL (`shopping.shopping_item`) – dodawanie, filtrowanie po kategorii i usuwanie produktów zalogowanego użytkownika. Kategorie: `GROCERY`, `CLOTHES`, `ELECTRONICS`, `PHARMACY`, `OTHER` (etykiety tłumaczone we frontendzie); `ALL` służy tylko do filtrowania listy.
@@ -160,6 +160,8 @@ i dostępna po uruchomieniu aplikacji:
 
 Endpointów nie opisujemy ręcznie w dokumentacji — Swagger UI jest jedynym źródłem prawdy,
 dzięki czemu specyfikacja nie dezaktualizuje się względem kodu.
+
+Na produkcji (profil `smallhost`) Swagger UI i `/v3/api-docs` są wyłączone (`springdoc.*.enabled: false`).
 
 ---
 

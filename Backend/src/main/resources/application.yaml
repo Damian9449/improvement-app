@@ -68,10 +68,10 @@ app:
   security:
     jwt:
       secret: ${JWT_SECRET}
-      access-token-expiration-ms: 900_000     # 15 minut
+      access-token-expiration-ms: 900_000       # 15 minut
       refresh-token-expiration-ms: 259_200_000  # 3 dni
     cookie:
-      secure: false  # true na produkcji (HTTPS)
+      secure: false   # true na produkcji (HTTPS)
       same-site: Lax  # frontend i backend na tej samej domenie (localhost) w dev
     rate-limit:
       max-login-attempts: 5

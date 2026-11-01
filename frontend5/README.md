@@ -143,6 +143,8 @@ Do komunikacji w czasie rzeczywistym wykorzystywane są biblioteki:
 - **sockjs-client**
 - **stompjs**
 
+Połączenie (`LogComponent`, temat `/topic/messages`) działa tylko dla zalogowanego użytkownika — SockJS wysyła cookie z JWT przy handshake'u. Kanał jest tylko do odbioru: backend odrzuca wiadomości wysyłane przez klienta.
+
 ---
 
 ## Przydatne linki
