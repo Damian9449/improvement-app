@@ -36,12 +36,11 @@ public class TrainingService {
     private final FilePathService filePathService;
 
     @Transactional
-    public void recreateTraining(List<TrainingEntity> trainings) {
-        log.info("Usuwanie starych treningów...");
-        trainingRepository.deleteAllInBatch();
-        trainingRepository.flush();
+    public void recreateTraining(Long userId, List<TrainingEntity> trainings) {
+        int deleted = trainingRepository.deleteAllByUserId(userId);
+        log.info("Usunięto {} starych treningów użytkownika {}", deleted, userId);
         trainingRepository.saveAll(trainings);
-        log.info("Zapisano wszystkie {} treningi", trainings.size());
+        log.info("Zapisano wszystkie {} treningi użytkownika {}", trainings.size(), userId);
     }
 
     @Transactional

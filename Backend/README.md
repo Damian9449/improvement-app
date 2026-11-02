@@ -120,6 +120,7 @@ Wsparcie paginacji i uniwersalnych odpowiedzi REST (`ListResponse`, `Page`, `Pag
 
 ### `workouts/`
 Treningi: ćwiczenia, plany i szablony, statystyki, rekordy. Zawiera konwertery oraz obiekty `request`/`response`.
+Import treningów z Google Drive (`/api/v1/drive/initApplication`) podmienia tylko treningi zalogowanego użytkownika; nazwy ćwiczeń i szablony treningowe to wspólne słowniki odtwarzane przy każdym imporcie.
 
 ---
 

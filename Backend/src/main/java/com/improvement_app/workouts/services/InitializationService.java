@@ -51,7 +51,7 @@ public class InitializationService {
         }
 
         log.info("Dodaje nowe treningi do bazy danych treningowej");
-        trainingService.recreateTraining(trainings);
+        trainingService.recreateTraining(userId, trainings);
     }
 
     //TODO: Sprawdzenie czy trening istnieje jak tak, to usuń stary
