@@ -38,7 +38,7 @@ public class DailyRecord extends AuditableEntity {
     public static DailyRecord from(DailyRecordRequest request, UserEntity user) {
         DailyRecord dailyRecord = new DailyRecord();
         dailyRecord.user = user;
-        dailyRecord.date = LocalDate.now();
+        dailyRecord.date = request.date() != null ? request.date() : LocalDate.now();
         dailyRecord.health = request.health();
         dailyRecord.exercise = request.exercise();
         dailyRecord.book = request.book();

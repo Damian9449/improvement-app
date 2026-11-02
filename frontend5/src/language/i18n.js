@@ -206,6 +206,11 @@ i18n.use(initReactI18next).init({
           exercise: 'Exercise',
           book: 'Book',
           software: 'Software',
+          actions: 'Actions',
+          deleteConfirmTitle: 'Delete entry?',
+          deleteConfirmText: 'The entry from {{date}} will be permanently deleted.',
+          deleteSuccess: 'Entry from {{date}} deleted',
+          deleteError: 'Failed to delete entry from {{date}}',
         },
         audit: {
           added: 'Added',
@@ -753,6 +758,11 @@ i18n.use(initReactI18next).init({
           exercise: 'Ćwiczenia na postawę',
           book: 'Książka',
           software: 'Software',
+          actions: 'Akcje',
+          deleteConfirmTitle: 'Usunąć wpis?',
+          deleteConfirmText: 'Wpis z {{date}} zostanie trwale usunięty.',
+          deleteSuccess: 'Usunięto wpis z {{date}}',
+          deleteError: 'Nie udało się usunąć wpisu z {{date}}',
         },
         audit: {
           added: 'Dodano',

@@ -4,6 +4,7 @@ import com.improvement_app.common.web.ApiVersions;
 import com.improvement_app.other.daily.request.DailyRecordRequest;
 import com.improvement_app.other.daily.response.DailyRecordResponse;
 import com.improvement_app.other.daily.service.DailyService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class DailyController {
 
     @PostMapping("/")
     public ResponseEntity<DailyRecordResponse> addDaily(
-            @RequestBody DailyRecordRequest request,
+            @Valid @RequestBody DailyRecordRequest request,
             @AuthenticationPrincipal(expression = "id") Long userId
     ) {
         DailyRecordResponse savedDaily = dailyService.addDaily(userId, request);
@@ -38,6 +39,15 @@ public class DailyController {
         Page<DailyRecordResponse> allDailies = dailyService.getDailyList(userId, pageable);
 
         return ResponseEntity.ok(allDailies);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDaily(
+            @PathVariable Long id,
+            @AuthenticationPrincipal(expression = "id") Long userId
+    ) {
+        dailyService.deleteDaily(userId, id);
+        return ResponseEntity.noContent().build();
     }
 
 }

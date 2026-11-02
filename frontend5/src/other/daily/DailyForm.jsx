@@ -17,11 +17,20 @@ import {
   useTheme,
 } from '@mui/material';
 import { ChecklistRtl } from '@mui/icons-material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+
+// Ten sam format co w historii wpisów i w API (dd-MM-yyyy)
+const DATE_FORMAT = 'DD-MM-YYYY';
 
 export default function DailyForm() {
   const { showSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const theme = useTheme();
+
+  // Domyślnie dzisiaj; po zapisie data zostaje, żeby łatwo uzupełniać kolejne dni wstecz
+  const [date, setDate] = useState(() => dayjs());
 
   const [dailyFields, setDailyFields] = useState({
     health: false,
@@ -31,7 +40,7 @@ export default function DailyForm() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => REST.addDaily(dailyFields),
+    mutationFn: () => REST.addDaily({ ...dailyFields, date: date.format(DATE_FORMAT) }),
     onSuccess: () => {
       queryClient.invalidateQueries(['daily-list']);
       showSnackbar(t('common.addedSuccessfully'), 'success');
@@ -74,6 +83,19 @@ export default function DailyForm() {
         <CardContent sx={{ p: 3 }}>
           <Grid container spacing={2}>
             <Grid size={12}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label={t('daily.date')}
+                  value={date}
+                  onChange={(newDate) => setDate(newDate)}
+                  format={DATE_FORMAT}
+                  disableFuture
+                  slotProps={{ textField: { size: 'small', sx: { minWidth: 160 } } }}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            <Grid size={12}>
               <FormControlLabel
                 control={<Checkbox checked={dailyFields.health} />}
                 name="health"
@@ -104,7 +126,7 @@ export default function DailyForm() {
               <Button
                 variant="contained"
                 onClick={() => mutate()}
-                disabled={isPending}
+                disabled={isPending || !date?.isValid()}
                 sx={{ minWidth: 120 }}
               >
                 {isPending ? t('common.saving') : t('messages.submit')}
