@@ -1,6 +1,6 @@
 import React from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import REST from '../../utils/REST';
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query';
+import REST, { queryClient } from '../../utils/REST';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -15,27 +15,52 @@ import {
   Box,
   Typography,
   Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
   useTheme,
 } from '@mui/material';
 import { TrendingUp } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 
 import StyledTableCell from '../../component/table/StyledTableCell';
 import StyledTableRow from '../../component/table/StyledTableRow';
 import PageLoader from '../../component/loader/PageLoader';
 import ErrorAlert from '../../component/error/ErrorAlert';
+import { useSnackbar } from '../../component/snackbar/SnackbarProvider';
 
 export default function DailyPrintout() {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const { t } = useTranslation();
   const theme = useTheme();
+  const { showSnackbar } = useSnackbar();
+  // Wpis czekający na potwierdzenie usunięcia (historii nie da się odtworzyć, więc pytamy)
+  const [toDelete, setToDelete] = useState(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['daily-list', page, size],
     queryFn: () => REST.getDaily(page, size),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
+  });
+
+  const { mutate: deleteDaily, isPending: isDeleting } = useMutation({
+    mutationFn: (daily) => REST.deleteDaily(daily.id),
+    onSuccess: (_, daily) => {
+      queryClient.invalidateQueries({ queryKey: ['daily-list'] });
+      showSnackbar(t('daily.deleteSuccess', { date: daily.date }), 'success');
+    },
+    onError: (_, daily) => {
+      showSnackbar(t('daily.deleteError', { date: daily.date }), 'error');
+    },
+    onSettled: () => setToDelete(null),
+    retry: false,
   });
 
   const handleChangePage = (event, newPage) => {
@@ -85,6 +110,7 @@ export default function DailyPrintout() {
                 <StyledTableCell>{t('daily.exercise')}</StyledTableCell>
                 <StyledTableCell>{t('daily.book')}</StyledTableCell>
                 <StyledTableCell>{t('daily.software')}</StyledTableCell>
+                <StyledTableCell>{t('daily.actions')}</StyledTableCell>
               </StyledTableRow>
             </TableHead>
 
@@ -135,6 +161,24 @@ export default function DailyPrintout() {
                       size="small"
                     />
                   </StyledTableCell>
+                  <StyledTableCell sx={{ width: '80px' }}>
+                    <IconButton
+                      aria-label="delete daily"
+                      size="small"
+                      onClick={() => setToDelete(daily)}
+                      disabled={isDeleting}
+                      sx={{
+                        backgroundColor: theme.palette.error.light,
+                        color: theme.palette.error.main,
+                        '&:hover': {
+                          backgroundColor: theme.palette.error.main,
+                          color: 'text.primary',
+                        },
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -144,7 +188,7 @@ export default function DailyPrintout() {
                 <TablePagination
                   size="small"
                   rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={5}
+                  colSpan={6}
                   count={data?.totalElements || 0}
                   rowsPerPage={size}
                   page={page}
@@ -160,6 +204,28 @@ export default function DailyPrintout() {
           </Table>
         </TableContainer>
       </Card>
+
+      <Dialog open={toDelete !== null} onClose={() => !isDeleting && setToDelete(null)}>
+        <DialogTitle>{t('daily.deleteConfirmTitle')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('daily.deleteConfirmText', { date: toDelete?.date })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setToDelete(null)} disabled={isDeleting}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => deleteDaily(toDelete)}
+            disabled={isDeleting}
+          >
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
