@@ -35,7 +35,7 @@ const LogComponent = () => {
       onConnect: () => {
         setIsConnected(true);
         setIsConnecting(false);
-        client.subscribe('/topic/messages', (message) => {
+        client.subscribe('/user/queue/messages', (message) => {
           setMessages((prevMessages) => {
             const updatedMessages = [message.body, ...prevMessages];
             return updatedMessages.slice(0, 10);

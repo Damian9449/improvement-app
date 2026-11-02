@@ -22,10 +22,10 @@ class WebSocketAuthChannelInterceptorTest {
     private final Principal user = new UsernamePasswordAuthenticationToken("user", null, List.of());
 
     @Test
-    @DisplayName("CONNECT i SUBSCRIBE na /topic/** z zalogowanym użytkownikiem przechodzą")
+    @DisplayName("CONNECT i SUBSCRIBE na /user/queue/** z zalogowanym użytkownikiem przechodzą")
     void shouldAllowAuthenticatedConnectAndSubscribe() {
         Message<?> connect = frame(StompCommand.CONNECT, user, null);
-        Message<?> subscribe = frame(StompCommand.SUBSCRIBE, user, "/topic/messages");
+        Message<?> subscribe = frame(StompCommand.SUBSCRIBE, user, "/user/queue/messages");
 
         assertThat(interceptor.preSend(connect, null)).isSameAs(connect);
         assertThat(interceptor.preSend(subscribe, null)).isSameAs(subscribe);
@@ -36,21 +36,25 @@ class WebSocketAuthChannelInterceptorTest {
     void shouldRejectAnonymousFrames() {
         assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.CONNECT, null, null), null))
                 .isInstanceOf(AccessDeniedException.class);
-        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SUBSCRIBE, null, "/topic/messages"), null))
+        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SUBSCRIBE, null, "/user/queue/messages"), null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
-    @DisplayName("SUBSCRIBE poza /topic/** jest odrzucany")
+    @DisplayName("SUBSCRIBE poza /user/queue/** (np. broadcast /topic/**) jest odrzucany")
     void shouldRejectSubscriptionOutsideTopic() {
         assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SUBSCRIBE, user, "/app/message"), null))
                 .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SUBSCRIBE, user, "/topic/messages"), null))
+                .isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SUBSCRIBE, user, "/queue/messages"), null))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
-    @DisplayName("SEND od klienta jest zawsze odrzucany — również na /topic/**")
+    @DisplayName("SEND od klienta jest zawsze odrzucany — również do kolejki innego użytkownika")
     void shouldRejectClientSend() {
-        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SEND, user, "/topic/messages"), null))
+        assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SEND, user, "/user/other/queue/messages"), null))
                 .isInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> interceptor.preSend(frame(StompCommand.SEND, user, "/app/message"), null))
                 .isInstanceOf(AccessDeniedException.class);

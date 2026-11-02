@@ -14,7 +14,7 @@ import com.improvement_app.workouts.helpers.DriveFilesHelper;
 import com.improvement_app.workouts.services.data.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.improvement_app.common.websocket.UserLogNotifier;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -35,16 +35,16 @@ public class InitializationService {
     private final ExerciseNameService exerciseNameService;
     private final TrainingService trainingService;
     private final TrainingTemplateService trainingTemplateService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserLogNotifier userLogNotifier;
     private final FileDownloadService fileDownloadService;
     private final UserService userService;
 
 
 
     public void initApplicationTrainings(Long userId) {
-        List<TrainingEntity> trainings = importTrainingsFromDrive(DRIVE_TRAININGS_FOLDER_NAME);
-
         UserEntity userEntity = userService.findById(userId);
+
+        List<TrainingEntity> trainings = importTrainingsFromDrive(DRIVE_TRAININGS_FOLDER_NAME, userEntity.getUsername());
 
         for (TrainingEntity training : trainings) {
             training.setUser(userEntity);
@@ -55,7 +55,7 @@ public class InitializationService {
     }
 
     //TODO: Sprawdzenie czy trening istnieje jak tak, to usuń stary
-    private List<TrainingEntity> importTrainingsFromDrive(String folderName) {
+    private List<TrainingEntity> importTrainingsFromDrive(String folderName, String username) {
         log.info("Import ćwiczeń z folderu Google Drive: {}", folderName);
 
         List<DriveFileItemDTO> driveFiles = googleDriveFileService.listFiles(folderName);
@@ -76,7 +76,7 @@ public class InitializationService {
 
                 String logMsg = String.format("(%d/%d) Import treningu: %s", i + 1, driveFiles.size(), trainingName);
                 log.info(logMsg);
-                messagingTemplate.convertAndSend("/topic/messages", logMsg);
+                userLogNotifier.send(username, logMsg);
 
                 File file = filePathService.getDownloadedFile(trainingName);
                 TrainingEntity parsed = DriveFilesHelper.parseExcelTrainingFile(file);

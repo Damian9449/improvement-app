@@ -6,7 +6,7 @@ import com.improvement_app.googledrive.service.FileDownloadService;
 import com.improvement_app.food.infrastructure.googledrivefileparser.parsers.ProductParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.improvement_app.common.websocket.UserLogNotifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,14 +23,14 @@ public class ProductInitializer {
     private final FileDownloadService fileDownloadService;
     private final ProductParser productParser;
     private final ProductRepository productRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserLogNotifier userLogNotifier;
 
     private static final String PRODUCTS_PROCESSING_MESSAGE = "Processing products from file: {}";
     private static final String PRODUCTS_SAVED_MESSAGE = "Successfully saved {} products to database";
 
-    public List<ProductEntity> initializeProducts() throws IOException {
+    public List<ProductEntity> initializeProducts(String username) throws IOException {
         log.info(PRODUCTS_PROCESSING_MESSAGE, PRODUCTS_SHEET_NAME);
-        messagingTemplate.convertAndSend("/topic/messages", "Loading products...");
+        userLogNotifier.send(username, "Loading products...");
 
         try {
             File productsFile = fileDownloadService.downloadFile(PRODUCTS_SHEET_NAME);
@@ -40,7 +40,7 @@ public class ProductInitializer {
             List<ProductEntity> savedProducts = productRepository.saveAll(productEntities);
 
             log.info(PRODUCTS_SAVED_MESSAGE, savedProducts.size());
-            messagingTemplate.convertAndSend("/topic/messages",
+            userLogNotifier.send(username,
                     String.format("Loaded %d products", savedProducts.size()));
 
             return savedProducts;

@@ -8,7 +8,7 @@ import com.improvement_app.googledrive.entity.DriveFileItemDTO;
 import com.improvement_app.googledrive.service.GoogleDriveFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.improvement_app.common.websocket.UserLogNotifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -30,20 +30,20 @@ public class MealInitializer {
     private final FileDownloadService fileDownloadService;
     private final MealParser mealParser;
     private final MealRecipeRepository mealRecipeRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserLogNotifier userLogNotifier;
 
     private static final String MEAL_PROCESSING_MESSAGE = "(%d/%d) Processing meal: %s";
     private static final String MEALS_COMPLETED_MESSAGE = "Successfully processed {} meals";
     private static final String MEAL_PARSE_ERROR_MESSAGE = "Failed to parse meal: {} - {}";
 
-    public void initializeMeals(List<ProductEntity> products) {
-        messagingTemplate.convertAndSend("/topic/messages", "Starting meal parsing process...");
+    public void initializeMeals(List<ProductEntity> products, String username) {
+        userLogNotifier.send(username, "Starting meal parsing process...");
 
         Map<Long, ProductEntity> productMap = products.stream()
                 .collect(Collectors.toMap(ProductEntity::getId, Function.identity()));
 
         List<DriveFileItemDTO> mealFiles = findAllMealFiles();
-        List<MealRecipeEntity> processedMeals = processMealFiles(mealFiles, productMap);
+        List<MealRecipeEntity> processedMeals = processMealFiles(mealFiles, productMap, username);
 
         if (!processedMeals.isEmpty()) {
             mealRecipeRepository.saveAll(processedMeals);
@@ -62,7 +62,8 @@ public class MealInitializer {
     }
 
     private List<MealRecipeEntity> processMealFiles(List<DriveFileItemDTO> mealFiles,
-                                                    Map<Long, ProductEntity> productMap) {
+                                                    Map<Long, ProductEntity> productMap,
+                                                    String username) {
         List<MealRecipeEntity> processedMeals = new ArrayList<>();
         int totalFiles = mealFiles.size();
         int processedCount = 0;
@@ -75,7 +76,7 @@ public class MealInitializer {
                         processedCount, totalFiles, mealFile.getName());
 
                 log.info(progressMessage);
-                messagingTemplate.convertAndSend("/topic/messages", progressMessage);
+                userLogNotifier.send(username, progressMessage);
 
                 MealRecipeEntity meal = parseSingleMeal(mealFile, productMap);
                 if (meal != null) {

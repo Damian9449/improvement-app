@@ -110,7 +110,7 @@ Zadania okresowe z podziałem na `daily` i `weekly`.
 Przechowywanie i parsowanie danych o technologiach (`Technology`, `TechnologyList`).
 
 ### `security/`
-Pełna obsługa uwierzytelniania: JWT (access + refresh token, `jwt`), logowanie przez Google (`oauth2`), kontrolery uwierzytelniania (`controllers`), konfiguracja zabezpieczeń i CORS (`config`), rate limiting prób logowania oraz weryfikacja e-mail. WebSocket (`/ws`, STOMP) wymaga zalogowania: handshake przechodzi przez łańcuch Spring Security, a `WebSocketAuthChannelInterceptor` pozwala klientom tylko subskrybować `/topic/**` — wysyłanie wiadomości (SEND) jest zablokowane, kanał służy wyłącznie do powiadomień serwer → klient.
+Pełna obsługa uwierzytelniania: JWT (access + refresh token, `jwt`), logowanie przez Google (`oauth2`), kontrolery uwierzytelniania (`controllers`), konfiguracja zabezpieczeń i CORS (`config`), rate limiting prób logowania oraz weryfikacja e-mail. WebSocket (`/ws`, STOMP) wymaga zalogowania: handshake przechodzi przez łańcuch Spring Security, a `WebSocketAuthChannelInterceptor` pozwala klientom tylko subskrybować własną kolejkę `/user/queue/**` — wysyłanie wiadomości (SEND) jest zablokowane, kanał służy wyłącznie do powiadomień serwer → klient. Komunikaty postępu (np. importu z Google Drive) wysyła `common/websocket/UserLogNotifier` tylko do użytkownika, który uruchomił operację (`convertAndSendToUser`); nie ma tematów broadcast.
 
 ### `shopping/`
 Listy zakupów w PostgreSQL (`shopping.shopping_item`) – dodawanie, filtrowanie po kategorii i usuwanie produktów zalogowanego użytkownika. Kategorie: `GROCERY`, `CLOTHES`, `ELECTRONICS`, `PHARMACY`, `OTHER` (etykiety tłumaczone we frontendzie); `ALL` służy tylko do filtrowania listy.

@@ -15,8 +15,8 @@ public class InitializationDataService implements InitializationUseCase {
 
     private final InitializerPort initializerPort;
 
-    public void initializeData() throws IOException {
-        initializerPort.initializeData();
+    public void initializeData(String username) throws IOException {
+        initializerPort.initializeData(username);
     }
 
 }

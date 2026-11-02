@@ -10,7 +10,7 @@ import com.improvement_app.food.infrastructure.googledrivefileparser.initializer
 import com.improvement_app.food.infrastructure.googledrivefileparser.initializers.SweetsInitializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.improvement_app.common.websocket.UserLogNotifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class FoodDataInitializationService implements InitializerPort {
     private final SweetsInitializer sweetsInitializer;
     private final ProductRepository productRepository;
     private final MealRecipeRepository mealRecipeRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserLogNotifier userLogNotifier;
 
     private static final String INITIALIZATION_START_MESSAGE = "Starting food data initialization";
     private static final String INITIALIZATION_SUCCESS_MESSAGE = "Food data initialization completed successfully";
@@ -33,23 +33,23 @@ public class FoodDataInitializationService implements InitializerPort {
 
     @Override
 //    @Transactional
-    public void initializeData() {
+    public void initializeData(String username) {
         log.info(INITIALIZATION_START_MESSAGE);
-        messagingTemplate.convertAndSend("/topic/messages", INITIALIZATION_START_MESSAGE);
+        userLogNotifier.send(username, INITIALIZATION_START_MESSAGE);
 
         try {
             clearExistingData();
 
-            List<ProductEntity> products = productInitializer.initializeProducts();
-            mealInitializer.initializeMeals(products);
-            sweetsInitializer.initializeSweets();
+            List<ProductEntity> products = productInitializer.initializeProducts(username);
+            mealInitializer.initializeMeals(products, username);
+            sweetsInitializer.initializeSweets(username);
 
             log.info(INITIALIZATION_SUCCESS_MESSAGE);
-            messagingTemplate.convertAndSend("/topic/messages", INITIALIZATION_SUCCESS_MESSAGE);
+            userLogNotifier.send(username, INITIALIZATION_SUCCESS_MESSAGE);
 
         } catch (Exception e) {
             log.error(INITIALIZATION_ERROR_MESSAGE, e);
-            messagingTemplate.convertAndSend("/topic/messages", INITIALIZATION_ERROR_MESSAGE + ": " + e.getMessage());
+            userLogNotifier.send(username, INITIALIZATION_ERROR_MESSAGE + ": " + e.getMessage());
             throw new DataInitializationException("Failed to initialize food data", e);
         }
     }

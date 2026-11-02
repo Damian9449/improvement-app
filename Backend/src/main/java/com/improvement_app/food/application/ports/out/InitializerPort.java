@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface InitializerPort {
 
-    void initializeData() throws IOException;
+    void initializeData(String username) throws IOException;
 
 }

@@ -6,7 +6,7 @@ import com.improvement_app.googledrive.service.FileDownloadService;
 import com.improvement_app.food.infrastructure.googledrivefileparser.parsers.SweetsParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.improvement_app.common.websocket.UserLogNotifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,14 +23,14 @@ public class SweetsInitializer {
     private final FileDownloadService fileDownloadService;
     private final SweetsParser sweetsParser;
     private final MealRecipeRepository mealRecipeRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserLogNotifier userLogNotifier;
 
     private static final String SWEETS_PROCESSING_MESSAGE = "Processing sweets from file: {}";
     private static final String SWEETS_SAVED_MESSAGE = "Successfully saved {} sweets to database";
 
-    public void initializeSweets() throws IOException {
+    public void initializeSweets(String username) throws IOException {
         log.info(SWEETS_PROCESSING_MESSAGE, SWEETS_SHEET_NAME);
-        messagingTemplate.convertAndSend("/topic/messages", "Loading sweets...");
+        userLogNotifier.send(username, "Loading sweets...");
 
         try {
             File sweetsFile = fileDownloadService.downloadFile(SWEETS_SHEET_NAME);
@@ -40,7 +40,7 @@ public class SweetsInitializer {
             mealRecipeRepository.saveAll(sweets);
 
             log.info(SWEETS_SAVED_MESSAGE, sweets.size());
-            messagingTemplate.convertAndSend("/topic/messages",
+            userLogNotifier.send(username,
                     String.format("Loaded %d sweets", sweets.size()));
 
         } catch (IOException e) {
