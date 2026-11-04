@@ -1,30 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { Box, Button, Typography, List, ListItem, Fade, CircularProgress } from '@mui/material';
 import {
-  Box,
-  Card,
-  CardContent,
-  Paper,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Fade,
-  CircularProgress,
-  Chip,
-  useTheme,
-} from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import { Message as MessageIcon, Circle as CircleIcon } from '@mui/icons-material';
+  Message as MessageIcon,
+  Circle as CircleIcon,
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
 const LogComponent = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const host_url = import.meta.env.VITE_API_URL;
 
@@ -36,8 +27,14 @@ const LogComponent = () => {
         setIsConnected(true);
         setIsConnecting(false);
         client.subscribe('/user/queue/messages', (message) => {
+          // Czas zapisujemy w chwili nadejścia — inaczej każdy render pokazywałby bieżącą godzinę
+          const entry = {
+            id: `${Date.now()}-${Math.random()}`,
+            text: message.body,
+            time: new Date().toLocaleTimeString(),
+          };
           setMessages((prevMessages) => {
-            const updatedMessages = [message.body, ...prevMessages];
+            const updatedMessages = [entry, ...prevMessages];
             return updatedMessages.slice(0, 10);
           });
         });
@@ -62,165 +59,69 @@ const LogComponent = () => {
   }, [host_url]);
 
   return (
-    <Card
-      elevation={2}
-      sx={{
-        borderRadius: 3,
-        bgcolor: 'background.surface',
-        border: theme.palette.card.border,
-        overflow: 'hidden',
-      }}
-    >
-      <Box
-        sx={{
-          p: 2,
-          background: theme.palette.card.header,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Box display="flex" alignItems="center" gap={2}>
-          <MessageIcon sx={{ fontSize: 24, color: 'success.main' }} />
-          <Typography variant="subtitle1" fontWeight="600" color="text.primary">
+    <Box>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <MessageIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+          <Typography variant="body2" fontWeight="600" color="text.secondary">
             {t('home.activityLog')}
           </Typography>
         </Box>
 
         {/* Connection Status */}
-        <Box display="flex" alignItems="center" gap={1}>
-          {isConnecting ? (
-            <Box display="flex" alignItems="center" gap={1}>
-              <CircularProgress size={16} sx={{ color: 'warning.main' }} />
-              <Chip
-                label={t('home.connecting')}
-                size="small"
-                sx={{
-                  backgroundColor: alpha(theme.palette.warning.main, 0.2),
-                  color: 'warning.main',
-                  border: `1px solid ${alpha(theme.palette.warning.main, 0.3)}`,
-                }}
-              />
-            </Box>
-          ) : (
-            <Chip
-              icon={<CircleIcon sx={{ fontSize: 12 }} />}
-              label={isConnected ? t('home.connected') : t('home.disconnected')}
-              size="small"
-              sx={{
-                backgroundColor: alpha(
-                  isConnected ? theme.palette.success.main : theme.palette.error.main,
-                  0.2
-                ),
-                color: isConnected ? 'success.main' : 'error.main',
-                border: `1px solid ${alpha(
-                  isConnected ? theme.palette.success.main : theme.palette.error.main,
-                  0.3
-                )}`,
-              }}
-            />
-          )}
-        </Box>
+        {isConnecting ? (
+          <Box display="flex" alignItems="center" gap={1}>
+            <CircularProgress size={12} sx={{ color: 'warning.main' }} />
+            <Typography variant="caption" color="warning.main">
+              {t('home.connecting')}
+            </Typography>
+          </Box>
+        ) : (
+          <Box display="flex" alignItems="center" gap={0.5}>
+            <CircleIcon sx={{ fontSize: 10, color: isConnected ? 'success.main' : 'error.main' }} />
+            <Typography variant="caption" color={isConnected ? 'success.main' : 'error.main'}>
+              {isConnected ? t('home.connected') : t('home.disconnected')}
+            </Typography>
+          </Box>
+        )}
       </Box>
 
-      <CardContent sx={{ p: 3 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          {t('home.last10Messages')}
+      {messages.length ? (
+        <List dense disablePadding sx={{ maxHeight: 240, overflow: 'auto' }}>
+          {(expanded ? messages : messages.slice(0, 1)).map((msg) => (
+            <Fade in={true} timeout={500} key={msg.id}>
+              <ListItem disableGutters sx={{ py: 0.25, gap: 1.5, alignItems: 'baseline' }}>
+                <Typography
+                  variant="caption"
+                  color="text.disabled"
+                  sx={{ fontFamily: 'monospace', flexShrink: 0 }}
+                >
+                  {msg.time}
+                </Typography>
+                <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
+                  {msg.text}
+                </Typography>
+              </ListItem>
+            </Fade>
+          ))}
+        </List>
+      ) : (
+        <Typography variant="caption" color="text.disabled">
+          {t('home.messagesWillAppear')}
         </Typography>
+      )}
 
-        {/* Messages List */}
-        <Box
-          sx={{
-            overflow: 'auto',
-            '&::-webkit-scrollbar': {
-              width: '8px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '4px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: 'rgba(255, 255, 255, 0.3)',
-              borderRadius: '4px',
-              '&:hover': {
-                background: 'rgba(255, 255, 255, 0.4)',
-              },
-            },
-          }}
+      {messages.length > 1 && (
+        <Button
+          size="small"
+          onClick={() => setExpanded((prev) => !prev)}
+          endIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          sx={{ mt: 0.5, textTransform: 'none' }}
         >
-          {messages.length ? (
-            <List sx={{ p: 0 }}>
-              {messages.map((msg, index) => (
-                <Fade in={true} timeout={500} key={index}>
-                  <ListItem
-                    sx={{
-                      mb: 1,
-                      p: 0,
-                      '&:last-child': { mb: 0 },
-                    }}
-                  >
-                    <Paper
-                      variant="outlined"
-                      sx={{
-                        width: '100%',
-                        borderRadius: 2,
-                        p: 2,
-                        textAlign: 'center',
-                      }}
-                    >
-                      <ListItemText
-                        primary={
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: 'success.main',
-                              fontWeight: 500,
-                              fontSize: '0.9rem',
-                              wordBreak: 'break-word',
-                            }}
-                          >
-                            {msg}
-                          </Typography>
-                        }
-                        secondary={
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: 'text.disabled',
-                              fontSize: '0.75rem',
-                              mt: 0.5,
-                            }}
-                          >
-                            {new Date().toLocaleTimeString()}
-                          </Typography>
-                        }
-                      />
-                    </Paper>
-                  </ListItem>
-                </Fade>
-              ))}
-            </List>
-          ) : (
-            <Paper
-              variant="outlined"
-              sx={{
-                borderRadius: 2,
-                py: 4,
-                textAlign: 'center',
-              }}
-            >
-              <MessageIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-              <Typography variant="body1" color="text.secondary" fontWeight="500">
-                {t('home.noMessages')}
-              </Typography>
-              <Typography variant="body2" color="text.disabled" sx={{ mt: 1 }}>
-                {t('home.messagesWillAppear')}
-              </Typography>
-            </Paper>
-          )}
-        </Box>
-      </CardContent>
-    </Card>
+          {expanded ? t('home.hideLog') : t('home.fullLog')}
+        </Button>
+      )}
+    </Box>
   );
 };
 

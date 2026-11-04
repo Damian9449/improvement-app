@@ -203,6 +203,10 @@ export default class REST {
   }
 
   // Food module
+  static getDashboardSummary() {
+    return get(serverUrl + apiV1 + 'dashboard/summary');
+  }
+
   static initFoodModule() {
     return get(serverUrl + apiV1 + drive + 'initFoodModule');
   }

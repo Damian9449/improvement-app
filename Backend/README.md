@@ -88,6 +88,7 @@ Audyt historii zmian encji oparty o Hibernate Envers. Udostępnia podgląd rewiz
 
 ### `common/`
 Współdzielone konfiguracje i kontrolery: `JacksonConfiguration` (serializacja JSON), `RootController` oraz `ratelimit/RateLimitFilter` – limitowanie żądań HTTP (Bucket4j, token bucket). Filtr działa w łańcuchu Spring Security za filtrem JWT i ma osobne limity per użytkownik/IP dla logowania (`/api/v1/auth/*`, per IP), Google Drive (`/api/v1/drive/**`) i reszty API, plus limit globalny. Po przekroczeniu zwraca `429` z `Retry-After`; limity w `app.security.rate-limit.http` (`application.yaml`).
+`dashboard/` – `GET /api/v1/dashboard/summary` zwraca dane panelu głównego dla zalogowanego użytkownika: daty ostatnich wpisów (trening, dzień diety, weekly, daily), oraz dni z wpisem z ostatnich 35 dni.
 
 ### `exceptions/`
 Globalna obsługa wyjątków i walidacji: `GlobalExceptionHandler` (centralny handler) oraz klasy formatujące odpowiedzi błędów (`ErrorResponse`, `ValidationErrorResponse`, `FieldValidationError`).
