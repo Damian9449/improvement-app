@@ -1,4 +1,4 @@
-package com.improvement_app.common.dashboard;
+package com.improvement_app.home;
 
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;

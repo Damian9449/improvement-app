@@ -18,13 +18,13 @@
 
 ## Wstęp
 
-Backend Improvement App to modularna aplikacja napisana w Javie 17 z użyciem Spring Boot 3.3.4. Każda domena funkcjonalna posiada własny pakiet i podział na warstwy, co ułatwia rozwój, testowanie i utrzymanie kodu. Moduł `food` został dodatkowo zorganizowany według architektury heksagonalnej (porty i adaptery).
+Backend Improvement App to modularna aplikacja napisana w Javie 21 z użyciem Spring Boot 3.3.4. Każda domena funkcjonalna posiada własny pakiet i podział na warstwy, co ułatwia rozwój, testowanie i utrzymanie kodu. Moduł `food` został dodatkowo zorganizowany według architektury heksagonalnej (porty i adaptery).
 
 ---
 
 ## Technologie
 
-- **Java 17 + Spring Boot 3.3.4** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
+- **Java 21 + Spring Boot 3.3.4** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
 - **PostgreSQL** (JPA/Hibernate, pula HikariCP)
 - **Liquibase** – migracje schematu bazy
 - **Hibernate Envers** – audyt zmian encji
@@ -52,6 +52,7 @@ com/improvement_app/
 ├── other/         # Zadania okresowe (dzienne / tygodniowe)
 ├── parser/        # Parsowanie i przechowywanie danych o technologiach
 ├── googledrive/   # Integracja z Google Drive
+├── home/          # Panel główny (podsumowanie aktywności użytkownika)
 ├── security/      # Uwierzytelnianie i autoryzacja (JWT, OAuth2, rate limiting)
 ├── audit/         # Audyt zmian encji (Hibernate Envers)
 ├── common/        # Współdzielone konfiguracje i kontrolery
@@ -88,7 +89,6 @@ Audyt historii zmian encji oparty o Hibernate Envers. Udostępnia podgląd rewiz
 
 ### `common/`
 Współdzielone konfiguracje i kontrolery: `JacksonConfiguration` (serializacja JSON), `RootController` oraz `ratelimit/RateLimitFilter` – limitowanie żądań HTTP (Bucket4j, token bucket). Filtr działa w łańcuchu Spring Security za filtrem JWT i ma osobne limity per użytkownik/IP dla logowania (`/api/v1/auth/*`, per IP), Google Drive (`/api/v1/drive/**`) i reszty API, plus limit globalny. Po przekroczeniu zwraca `429` z `Retry-After`; limity w `app.security.rate-limit.http` (`application.yaml`).
-`dashboard/` – `GET /api/v1/dashboard/summary` zwraca dane panelu głównego dla zalogowanego użytkownika: daty ostatnich wpisów (trening, dzień diety, weekly, daily), oraz dni z wpisem z ostatnich 35 dni.
 
 ### `exceptions/`
 Globalna obsługa wyjątków i walidacji: `GlobalExceptionHandler` (centralny handler) oraz klasy formatujące odpowiedzi błędów (`ErrorResponse`, `ValidationErrorResponse`, `FieldValidationError`).
@@ -101,6 +101,9 @@ Najbardziej rozbudowany moduł (architektura heksagonalna): zarządzanie produkt
 
 ### `googledrive/`
 Integracja z Google Drive (dostęp do API przez konto serwisowe) – import/eksport plików.
+
+### `home/`
+Panel główny: `GET /api/v1/dashboard/summary` zwraca dla zalogowanego użytkownika daty ostatnich wpisów (trening, dzień diety, weekly, daily) oraz dni z wpisem z ostatnich 35 dni.
 
 ### `other/`
 Zadania okresowe z podziałem na `daily` i `weekly`.

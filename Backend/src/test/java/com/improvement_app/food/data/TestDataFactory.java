@@ -22,13 +22,13 @@ import java.util.*;
  */
 public class TestDataFactory {
 
-    private static Faker faker = new Faker(new Locale("pl"), new Random(42L));
+    private static Faker faker = new Faker(Locale.of("pl"), new Random(42L));
 
     /**
      * Resetuje Faker do początkowego stanu z tym samym seedem
      */
     public static void resetFaker() {
-        faker = new Faker(new Locale("pl"), new Random(42L));
+        faker = new Faker(Locale.of("pl"), new Random(42L));
     }
 
     // ============================================

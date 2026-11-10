@@ -1,4 +1,4 @@
-FROM maven:3.8-openjdk-17 AS builder
+FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /build
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
@@ -7,7 +7,7 @@ RUN mvn package
 
 
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=builder /build/target/improvement-app-backend-0.0.1-SNAPSHOT.jar /app/improvement-app-backend-0.0.1-SNAPSHOT.jar
 

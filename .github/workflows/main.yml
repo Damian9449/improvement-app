@@ -26,6 +26,14 @@ jobs:
           ssh mutarexx@s2.small.pl "chmod +x /home/mutarexx/backend/scripts/convert_and_restart.sh"
 
       # === BACKEND ===
+      # Domyślna Java na runnerze to 17 — backend wymaga 21
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
       - name: Build Spring Boot backend
         run: |
           cd Backend
@@ -58,7 +66,7 @@ jobs:
             printf 'export DB_USERNAME=%q\n'           "$DB_USERNAME"
             printf 'export DB_PASSWORD=%q\n'           "$DB_PASSWORD"
             printf 'export SSL_KEYSTORE_PASSWORD=%q\n' "$SSL_KEYSTORE_PASSWORD"
-            echo 'export JAVA_VERSION="17"'
+            echo 'export JAVA_VERSION="21"'
             echo 'umask 077; printf "export SSL_KEYSTORE_PASSWORD=%q\n" "$SSL_KEYSTORE_PASSWORD" > /home/mutarexx/backend/certs/keystore.env'
             echo 'pkill -f improvement-app-backend-0.0.1-SNAPSHOT.jar || true'
             echo 'sleep 2'

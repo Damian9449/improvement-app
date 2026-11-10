@@ -1,4 +1,4 @@
-package com.improvement_app.common.dashboard;
+package com.improvement_app.home;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.improvement_app.common.dashboard;
+package com.improvement_app.home;
 
 import com.improvement_app.food.config.PermitAllSecurityConfig;
 import com.improvement_app.food.config.TestContainersConfiguration;
