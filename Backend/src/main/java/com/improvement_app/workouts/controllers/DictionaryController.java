@@ -7,7 +7,7 @@ import com.improvement_app.workouts.response.TrainingTemplateResponse;
 import com.improvement_app.workouts.services.data.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +53,7 @@ public class DictionaryController {
     }
 
     @Operation(description = "Get training template")
-    @GetMapping(value = "/training/{template}", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "/training/{template}", produces = MediaType.APPLICATION_JSON_VALUE)
     public TrainingTemplateResponse getTrainingTemplate(@PathVariable String template) {
         return trainingTemplateService.getTrainingTemplate(template)
                 .toResponse();

@@ -8,7 +8,7 @@ import com.improvement_app.workouts.services.ExerciseService;
 import com.improvement_app.workouts.validation.ValidTrainingType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +30,7 @@ public class ExerciseController {
             summary = "Pobierz ćwiczenia po jednym z kryteriów",
             description = "Podaj dokładnie jeden z parametrów: date, name lub trainingName"
     )
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ListResponse<ExerciseResponse> searchExercises(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) String name,
@@ -48,7 +48,7 @@ public class ExerciseController {
     }
 
     @Operation(summary = "Pobierz szablon ostatniego treningu", description = "Zwraca szablon treningu z ostatnimi wykonaniami ćwiczeń")
-    @GetMapping(value = "/trainingType/{trainingType}", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "/trainingType/{trainingType}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ListResponse<ExerciseResponse> getTrainingFromTemplate(@PathVariable
                                                                   @ValidTrainingType String trainingType,
                                                                   @AuthenticationPrincipal(expression = "id") Long userId) {
@@ -62,7 +62,7 @@ public class ExerciseController {
     }
 
     @Operation(summary = "Pobierz rekordowe ćwiczenia z treningu", description = "Zwraca ćwiczenia o maksymalnej wykonanej pracy (ATH) dla danego typu treningu")
-    @GetMapping(value = "/trainingType/{trainingType}/maximum", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "/trainingType/{trainingType}/maximum", produces = MediaType.APPLICATION_JSON_VALUE)
     public ListResponse<ExerciseResponse> getMaxTrainingExercises(@PathVariable
                                                                   @ValidTrainingType String trainingType,
                                                                   @AuthenticationPrincipal(expression = "id") Long userId) {

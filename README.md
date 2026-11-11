@@ -67,7 +67,7 @@ Backend obsługuje całą logikę biznesową, autoryzację, dostęp do baz danyc
 
 ### Architektura i technologie
 
-- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
+- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Validation, WebSocket, Mail, OAuth2 Client, Actuator
 - **Baza danych** – PostgreSQL (JPA/Hibernate, pula połączeń HikariCP)
 - **Liquibase** – migracje schematu bazy (`src/main/resources/db/changelog`)
 - **Hibernate Envers** – audyt zmian encji

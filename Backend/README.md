@@ -24,7 +24,7 @@ Backend Improvement App to modularna aplikacja napisana w Javie 21 z użyciem Sp
 
 ## Technologie
 
-- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
+- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Validation, WebSocket, Mail, OAuth2 Client, Actuator
 - **PostgreSQL** (JPA/Hibernate, pula HikariCP)
 - **Liquibase** – migracje schematu bazy
 - **Hibernate Envers** – audyt zmian encji

@@ -14,7 +14,6 @@ import com.improvement_app.security.request.SignupRequest;
 import com.improvement_app.security.response.JwtResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,7 +164,7 @@ public class AuthService {
         log.debug("Resending verification email to: {}", username);
 
         UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("No account found with this username"));
+                .orElseThrow(() -> new UsernameNotFoundException("No account found with this username"));
 
         UserTokenEntity verificationToken = userTokenService.createToken(userEntity, TokenTypeEnum.EMAIL_VERIFICATION);
         emailService.sendVerificationEmail(userEntity.getEmail(), verificationToken);

@@ -9,7 +9,7 @@ import com.improvement_app.workouts.validation.ValidTrainingType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +42,7 @@ public class TrainingController {
     }
 
     @Operation(summary = "Pobierz ostatnie treningi danego typu", description = "Zwraca stronicowaną listę ostatnich treningów danego typu")
-    @GetMapping(value = "/{trainingType}", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "/{trainingType}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<TrainingDayResponse> getLastTrainingsType(@PathVariable
                                                           @ValidTrainingType String trainingType,
                                                           @PageableDefault(size = 10, sort = "date", direction = Sort.Direction.DESC)
@@ -54,7 +54,7 @@ public class TrainingController {
     }
 
     @Operation(summary = "Dodaj nowy trening", description = "Zapisuje trening w bazie i przesyła kopię na Google Drive")
-    @PostMapping(produces = MediaType.APPLICATION_JSON)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TrainingDayResponse> addTraining(@Valid @RequestBody List<ExerciseRequest> exercises,
                                                            @AuthenticationPrincipal(expression = "id") Long userId) {
 

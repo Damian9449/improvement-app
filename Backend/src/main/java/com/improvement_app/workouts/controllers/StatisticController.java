@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
 import java.util.List;
 
 
@@ -26,7 +26,7 @@ public class StatisticController {
 
     private final StatisticService statisticService;
 
-    @GetMapping(value = "{exerciseName}/{chartType}/{beginDate}/{endDate}", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(value = "{exerciseName}/{chartType}/{beginDate}/{endDate}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ChartPoint>> getTrainingStatisticData(
                                             @PathVariable
                                             @NotBlank(message = "Exercise name is required")
