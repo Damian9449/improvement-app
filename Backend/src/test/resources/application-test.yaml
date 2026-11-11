@@ -28,7 +28,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         # Tworzy brakujące schematy (np. przy reużytym kontenerze, gdzie schema.sql już się nie wykona)
         hbm2ddl:
           create_namespaces: true

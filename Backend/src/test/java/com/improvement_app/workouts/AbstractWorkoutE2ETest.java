@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,8 +50,8 @@ public abstract class AbstractWorkoutE2ETest {
     @Autowired protected ExerciseNameEntityRepository exerciseNameRepository;
     @Autowired protected UserRepository userRepository;
 
-    @MockBean protected GoogleDriveFileService googleDriveFileService;
-    @MockBean protected FilePathService filePathService;
+    @MockitoBean protected GoogleDriveFileService googleDriveFileService;
+    @MockitoBean protected FilePathService filePathService;
 
     @BeforeEach
     void cleanDb() {

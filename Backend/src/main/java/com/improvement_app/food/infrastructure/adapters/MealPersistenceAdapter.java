@@ -56,14 +56,15 @@ public class MealPersistenceAdapter implements MealPersistencePort {
     }
 
     private Specification<MealRecipeEntity> buildSpecification(MealSearchCriteria criteria) {
-        return Specification
-                .where(criteria.category() != MealCategory.ALL ?
-                        MealRecipeSpecifications.hasCategory(criteria.category()) : null)
-                .and(criteria.type() != MealType.ALL ?
-                        MealRecipeSpecifications.hasType(criteria.type()) : null)
-                .and(criteria.popularity() != MealPopularity.ALL ?
-                        MealRecipeSpecifications.hasPopularity(criteria.popularity()) : null)
-                .and(MealRecipeSpecifications.hasNameContaining(criteria.nameContains()));
+        // allOf pomija null, więc filtr "ALL" po prostu nie dodaje warunku
+        return Specification.allOf(
+                criteria.category() != MealCategory.ALL ?
+                        MealRecipeSpecifications.hasCategory(criteria.category()) : null,
+                criteria.type() != MealType.ALL ?
+                        MealRecipeSpecifications.hasType(criteria.type()) : null,
+                criteria.popularity() != MealPopularity.ALL ?
+                        MealRecipeSpecifications.hasPopularity(criteria.popularity()) : null,
+                MealRecipeSpecifications.hasNameContaining(criteria.nameContains()));
     }
 
     private Sort buildSort(MealSortCriteria sortCriteria) {
