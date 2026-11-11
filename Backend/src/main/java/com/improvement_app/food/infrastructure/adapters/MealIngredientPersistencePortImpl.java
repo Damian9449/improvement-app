@@ -5,7 +5,7 @@ import com.improvement_app.food.domain.recipe.MealIngredient;
 import com.improvement_app.food.infrastructure.entity.meals.MealIngredientEntity;
 import com.improvement_app.food.infrastructure.repository.MealIngredientRepository;
 import com.improvement_app.food.infrastructure.mappers.MealIngredientMapper;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
