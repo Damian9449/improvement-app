@@ -90,8 +90,13 @@ public class TestDataFactory {
         final String firstName = faker.name().firstName();
         final String lastName = faker.name().lastName();
 
+        // Bez id — nadaje je baza. Hibernate 6.6 traktuje encję z ustawionym id jako istniejącą
+        // i przy zapisie rzuca StaleObjectStateException, gdy takiego wiersza nie ma.
+        // Losowanie zostaje, żeby nie przesunąć sekwencji Fakera (seed 42), od której zależą
+        // oczekiwane JSON-y w testach.
+        faker.number().randomNumber();
+
         return UserEntity.builder()
-                .id(faker.number().randomNumber())
                 .name(firstName)
                 .surname(lastName)
                 .username(faker.name().username())

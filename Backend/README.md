@@ -18,13 +18,13 @@
 
 ## Wstęp
 
-Backend Improvement App to modularna aplikacja napisana w Javie 21 z użyciem Spring Boot 3.3.4. Każda domena funkcjonalna posiada własny pakiet i podział na warstwy, co ułatwia rozwój, testowanie i utrzymanie kodu. Moduł `food` został dodatkowo zorganizowany według architektury heksagonalnej (porty i adaptery).
+Backend Improvement App to modularna aplikacja napisana w Javie 21 z użyciem Spring Boot 3.5.6. Każda domena funkcjonalna posiada własny pakiet i podział na warstwy, co ułatwia rozwój, testowanie i utrzymanie kodu. Moduł `food` został dodatkowo zorganizowany według architektury heksagonalnej (porty i adaptery).
 
 ---
 
 ## Technologie
 
-- **Java 21 + Spring Boot 3.3.4** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
+- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
 - **PostgreSQL** (JPA/Hibernate, pula HikariCP)
 - **Liquibase** – migracje schematu bazy
 - **Hibernate Envers** – audyt zmian encji

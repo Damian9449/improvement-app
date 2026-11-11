@@ -37,7 +37,7 @@ Po starcie: frontend → http://localhost:3000, backend → http://localhost:808
 
 ```
 improvement-app/
-├── Backend/            # Spring Boot 3.3.4, Java 21 (REST API, WebSocket)
+├── Backend/            # Spring Boot 3.5.6, Java 21 (REST API, WebSocket)
 ├── frontend5/          # React 19 + Material UI (Vite)
 ├── StartupScripts/     # Skrypty inicjalizujące bazę (postgres/)
 ├── docker-compose.yml  # Uruchomienie całego stacku (backend, frontend, Postgres, pgAdmin)
@@ -67,7 +67,7 @@ Backend obsługuje całą logikę biznesową, autoryzację, dostęp do baz danyc
 
 ### Architektura i technologie
 
-- **Java 21 + Spring Boot 3.3.4** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
+- **Java 21 + Spring Boot 3.5.6** – Security, Web, Data JPA, Jersey, WebSocket, Mail, OAuth2 Client, Actuator
 - **Baza danych** – PostgreSQL (JPA/Hibernate, pula połączeń HikariCP)
 - **Liquibase** – migracje schematu bazy (`src/main/resources/db/changelog`)
 - **Hibernate Envers** – audyt zmian encji
